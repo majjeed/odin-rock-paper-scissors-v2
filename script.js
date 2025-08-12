@@ -48,7 +48,33 @@ function playRound(humanChoice, computerChoice) {
   }
 }
 
-const humanSelection = getHumanChoice();
-const computerSelection = getComputerChoice();
+//call this method in the console to play
+function playGame() {
+  humanScore = 0;
+  computerScore = 0;
 
-playRound(humanSelection, computerSelection);
+  for (let i = 0; i < 5; i++) {
+    const humanSelection = getHumanChoice();
+    const computerSelection = getComputerChoice();
+
+    playRound(humanSelection, computerSelection);
+  }
+
+  if (humanScore === computerScore) {
+    console.log(
+      `Final Results: There is no winner! You both tied with a score of ${humanScore}`
+    );
+  } else if (humanScore > computerScore) {
+    console.log(
+      `Final Results: Congratulations! You are the WINNER! 
+        \nYour score: ${humanScore}
+        \nComputer score: ${computerScore}`
+    );
+  } else {
+    console.log(
+      `Final Results: Sorry, the Computer beat you... 
+        \nComputer score: ${computerScore}
+        \nYour score: ${humanScore}`
+    );
+  }
+}
