@@ -1,5 +1,18 @@
 let humanScore = 0;
 let computerScore = 0;
+let gameRounds = 0;
+
+const resultDiv = document.querySelector(".result");
+
+function updateResult(message) {
+  const p = document.createElement("p");
+  p.textContent = message;
+  resultDiv.appendChild(p);
+}
+
+function clearResult() {
+  resultDiv.textContent = "";
+}
 
 function getComputerChoice() {
   let choice = Math.floor(Math.random() * 3);
@@ -13,68 +26,71 @@ function getComputerChoice() {
   }
 }
 
-function getHumanChoice() {
-  let choice = prompt("Please choose between rock, paper or scissors.");
-  return choice.toLowerCase();
-}
-
 function playRound(humanChoice, computerChoice) {
-  let outcomeText = "";
   let winner = "";
 
   if (humanChoice === computerChoice) {
     winner = "tie";
-  } else if (humanChoice === "rock" && computerChoice === "scissors")
+  } else if (
+    (humanChoice === "rock" && computerChoice === "scissors") ||
+    (humanChoice === "paper" && computerChoice === "rock") ||
+    (humanChoice === "scissors" && computerChoice === "paper")
+  ) {
     winner = "human";
-  else if (humanChoice === "rock" && computerChoice === "paper")
+  } else {
     winner = "computer";
-  else if (humanChoice === "paper" && computerChoice === "rock")
-    winner = "human";
-  else if (humanChoice === "paper" && computerChoice === "scissors")
-    winner = "computer";
-  else if (humanChoice === "scissors" && computerChoice === "rock")
-    winner = "computer";
-  else if (humanChoice === "scissors" && computerChoice === "paper")
-    winner = "computer";
+  }
 
   if (winner === "human") {
     humanScore++;
-    console.log(`You Win! ${humanChoice} beats ${computerChoice}`);
+    updateResult(`✅ You Win! ${humanChoice} beats ${computerChoice}`);
   } else if (winner === "computer") {
     computerScore++;
-    console.log(`You Lose! ${humanChoice} loses to ${computerChoice}`);
+    updateResult(`❌ You Lose! ${humanChoice} loses to ${computerChoice}`);
   } else {
-    console.log(`No one wins! You both chose ${humanChoice}`);
+    updateResult(`⚖️ No one wins! You both chose ${humanChoice}`);
+  }
+
+  updateResult(`Current Score: You ${humanScore} - ${computerScore} Computer`);
+}
+
+function playGame(humanSelection) {
+  const computerSelection = getComputerChoice();
+  gameRounds++;
+
+  updateResult(`--- Round ${gameRounds}/5 ---`);
+  playRound(humanSelection, computerSelection);
+
+  if (gameRounds === 5) {
+    updateResult("----- FINAL RESULTS -----");
+    if (humanScore === computerScore) {
+      updateResult(
+        `🤝 It's a tie! Final Score: ${humanScore}-${computerScore}`
+      );
+    } else if (humanScore > computerScore) {
+      updateResult(
+        `🎉 You WIN the game! Final Score: ${humanScore}-${computerScore}`
+      );
+    } else {
+      updateResult(
+        `💻 Computer wins the game! Final Score: ${computerScore}-${humanScore}`
+      );
+    }
+
+    // reset for next game
+    gameRounds = 0;
+    humanScore = 0;
+    computerScore = 0;
+
+    updateResult("Game reset. Start a new 5-round match!");
   }
 }
 
-//call this method in the console to play
-function playGame() {
-  humanScore = 0;
-  computerScore = 0;
+let btnContainer = document.querySelector(".buttonContainer");
+btnContainer.addEventListener("click", (event) => {
+  let target = event.target;
 
-  for (let i = 0; i < 5; i++) {
-    const humanSelection = getHumanChoice();
-    const computerSelection = getComputerChoice();
-
-    playRound(humanSelection, computerSelection);
+  if (["rock", "paper", "scissors"].includes(target.id)) {
+    playGame(target.id);
   }
-
-  if (humanScore === computerScore) {
-    console.log(
-      `Final Results: There is no winner! You both tied with a score of ${humanScore}`
-    );
-  } else if (humanScore > computerScore) {
-    console.log(
-      `Final Results: Congratulations! You are the WINNER! 
-        \nYour score: ${humanScore}
-        \nComputer score: ${computerScore}`
-    );
-  } else {
-    console.log(
-      `Final Results: Sorry, the Computer beat you... 
-        \nComputer score: ${computerScore}
-        \nYour score: ${humanScore}`
-    );
-  }
-}
+});
